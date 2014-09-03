@@ -1,8 +1,8 @@
 {
-    "name":         "jms/translation-bundle",
-    "description":  "Puts the Symfony2 Translation Component on steroids",
+    "name":         "jirikrepl/translation-bundle",
+    "description":  "Forked version with twig variables extractor",
     "keywords":     ["translation", "multilanguage", "extract", "webinterface", "ui", "i18n", "extraction", "interface"],
-    "homepage":     "http://jmsyst.com/bundles/JMSTranslationBundle",
+    "homepage":     "https://github.com/jirikrepl/JMS-TranslationBundle.git",
     "type":         "symfony-bundle",
     "license":      "Apache2",
     "authors": [
