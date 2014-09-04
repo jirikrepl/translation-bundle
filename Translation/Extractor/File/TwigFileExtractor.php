@@ -59,8 +59,14 @@ class TwigFileExtractor implements FileVisitorInterface, \Twig_NodeVisitorInterf
         if ($node instanceof TransNode) {
             $id = $node->getNode('body')->getAttribute('data');
             $domain = 'messages';
-            if (null !== $domainNode = $node->getNode('domain')) {
-                $domain = $domainNode->getAttribute('value');
+            $domainNode = $node->getNode('domain');
+            if (null !== $domainNode) {
+                if ($domainNode instanceof \Twig_Node_Expression_Constant) {
+                    $domain = $domainNode->getAttribute('value');
+                } else {
+                    // if domain was set dynamically from variable
+                    $domain = $this->domainFromVariable;
+                }
             }
 
             $message = new Message($id, $domain);
