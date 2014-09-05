@@ -31,10 +31,34 @@ class JsonExtractor implements FileVisitorInterface
     private $file;
     private $catalogue;
 
+    private function traverseData(array $categories)
+    {
+        foreach ($categories as $category) {
+            if (isset($category->subSections)) {
+                $this->traverseData($category->subSections);
+            }
+            // extract category name
+            $this->addMessage($category);
+            // extract category items
+            foreach($category->items as $item) {
+                $this->addMessage($item);
+            }
+        }
+    }
+
+    private function addMessage($item) {
+        $id = str_replace(" ", ".", $item->desc);
+        $message = new Message($id, 'menuItems');
+//        $message->addSource(new FileSource((string)$this->file));
+        $message->setDesc($item->desc);
+        $this->catalogue->add($message);
+    }
+
     public function visitJsonFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $data)
     {
         $this->file = $file;
         $this->catalogue = $catalogue;
+        $this->traverseData($data);
     }
 
     public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, \Twig_Node $ast)
