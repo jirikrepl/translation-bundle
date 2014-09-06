@@ -11,7 +11,6 @@ Code License:
 
 Documentation License:
 [Resources/doc/LICENSE](https://github.com/schmittjoh/JMSTranslationBundle/blob/master/Resources/doc/LICENSE)
-=======
 
 With this forked bundle you can extract messages from variables. If you want to translate messages form variables, 
 you have to use 'trans' prefix in its name. If variable is associative array, use 'trans' prefix for its keys. 
@@ -37,10 +36,15 @@ In twig template use this code to display translation
 ```
 
 ## JMStranslation workflow ##
+Jms file extractors works like this. Visit project directories and its contents (directories are defined trough extraction
+command line command). If file have known extension (.twig, .php) for file extractor (TranslationBundle/Translation/Extractor/FileExtractor.php). 
+Use appropriate extractor. All file extractors classes are in TranslationBundle/Translation/Extractor/File/
+
+### Directory structure ###
 
 To understand project extraction/tranlation workflow consider this symfony directory structure. This is structure is used
 in [King's Calculator](http://kingscalculator.com/). We will have many simple calculator pages in one base layout.
-We want to have one message(translation) file for every single calculator page.
+We want to have one message domain (translation file) for every single calculator page.
 
 <!-- language:console -->
     CalcBundle/
@@ -65,7 +69,38 @@ We want to have one message(translation) file for every single calculator page.
                         ...
         Tests/
         ...
-            
+
+### Convention for twig files ###
+
+```html+django
+{# zodiacCalc.html.twig #}
+
+{% extends 'RoyalBaseBundle::pageLayout.html.twig' %}
+
+{# set message domain for this file #}
+{% set dom = 'zodiacCalc' %}
+{% set transVars = {'transPageTitle': 'Zodiac calculator', ... %}
+
+{% block info %}
+    {# in unforked jmsBundle you can not have domain name referenced by variable name (in this case: dom) #}
+    {{ 'zodiac.info'|trans({}, dom)|desc('Enter your birthdate and discover what your zodiac sign is.') }}
+{% endblock %}
+```
+
+Common page layout is used for every calculator.
+
+```html+django
+{# pageLayout.html.twig #}
+
+...
+{% block title %}
+    {# content of dom variable comes from extended zodiacCalc.html.twig #} 
+    {{ transVars.transPageTitle|trans({}, dom) }}
+{% endblock %}
+...
+```
+
+### Save common extraction config ### 
 
 In your config_dev.yaml you can save jms_traslation configs. This simplifies extraction command line commands. List another 
 settings options with command: `php bin\console translation:extract --help` 
@@ -89,6 +124,8 @@ settings options with command: `php bin\console translation:extract --help`
                 dirs: [%views_dir%]
                 output_dir: %calc.trans_dir%/DateCalculators
                 domain: ageCalc
+       
+### extraction commands ###
                 
 To extract messages using predefined commands above use --config option (alias -c):
                 
