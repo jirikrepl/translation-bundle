@@ -29,16 +29,30 @@ class TwigVariableExtractor implements FileVisitorInterface, \Twig_NodeVisitorIn
     private $file;
     private $catalogue;
     private $traverser;
+    private $domain;
 
     public function __construct(\Twig_Environment $env)
     {
         $this->traverser = new \Twig_NodeTraverser($env, array($this));
     }
 
+    /**
+     * this function process every node in twig file
+     *
+     * @param \Twig_NodeInterface $node
+     * @param \Twig_Environment $env
+     * @return \Twig_NodeInterface
+     */
     public function enterNode(\Twig_NodeInterface $node, \Twig_Environment $env)
     {
         if ($node instanceof \Twig_Node_Set) {
+            // if statement below finds variable named 'dom', which can be used as dynamic domain name
+            // set dom variable at top of your twig file, before using any twig filters
+            // twig code: {% set dom = 'translationDomainName' %}
             $varName = $node->getNode('names')->getNode(0)->getAttribute('name');
+            if ($varName == 'dom') {
+                $this->domain = $node->getNode('values')->getNode(0)->getAttribute('value');
+            }
             // create transKey
             // process only $varName with prefix 'trans'
             if (CommonTools::startsWith($varName, 'trans')) {
@@ -97,7 +111,7 @@ class TwigVariableExtractor implements FileVisitorInterface, \Twig_NodeVisitorIn
      */
     private function addMessage($desc, $node)
     {
-        $message = new Message($desc, 'variables');
+        $message = new Message($desc, $this->domain);
         $message->addSource(new FileSource((string)$this->file, $node->getLine()));
         $this->catalogue->add($message);
     }
@@ -111,6 +125,8 @@ class TwigVariableExtractor implements FileVisitorInterface, \Twig_NodeVisitorIn
     }
 
     /**
+     * this is common interface function
+     *
      * @param \SplFileInfo $file
      * @param MessageCatalogue $catalogue
      * @param \Twig_Node $ast
@@ -118,6 +134,7 @@ class TwigVariableExtractor implements FileVisitorInterface, \Twig_NodeVisitorIn
     public function visitTwigFile(\SplFileInfo $file, MessageCatalogue $catalogue, \Twig_Node $ast)
     {
         $this->file = $file;
+        $this->domain = 'variables'; // diz iz default domain for every processed file
         $this->catalogue = $catalogue;
         $this->traverser->traverse($ast);
         $this->traverseEmbeddedTemplates($ast);

@@ -18,10 +18,7 @@
 
 namespace JMS\TranslationBundle\Translation\Extractor\File;
 
-use JMS\TranslationBundle\Exception\RuntimeException;
-use Symfony\Bridge\Twig\Node\TransNode;
-
-use JMS\TranslationBundle\Model\FileSource;
+use \stdClass;
 use JMS\TranslationBundle\Model\Message;
 use JMS\TranslationBundle\Model\MessageCatalogue;
 use JMS\TranslationBundle\Translation\Extractor\FileVisitorInterface;
@@ -31,8 +28,18 @@ class JsonExtractor implements FileVisitorInterface
     private $file;
     private $catalogue;
 
+    /**
+     * crawl php array created from json data
+     *
+     * @param array $categories
+     */
     private function traverseData(array $categories)
     {
+        // manually create message for 'All calculators'
+        $allCalc = new stdClass;
+        $allCalc->desc = 'All calculators';
+        $this->addMessage($allCalc);
+
         foreach ($categories as $category) {
             if (isset($category->subSections)) {
                 $this->traverseData($category->subSections);
@@ -40,13 +47,21 @@ class JsonExtractor implements FileVisitorInterface
             // extract category name
             $this->addMessage($category);
             // extract category items
-            foreach($category->items as $item) {
-                $this->addMessage($item);
+            if (isset($category->items)) {
+                foreach ($category->items as $item) {
+                    $this->addMessage($item);
+                }
             }
         }
     }
 
-    private function addMessage($item) {
+    /**
+     * add message to catalogue
+     *
+     * @param $item
+     */
+    private function addMessage($item)
+    {
         $id = str_replace(" ", ".", $item->desc);
         $message = new Message($id, 'menuItems');
 //        $message->addSource(new FileSource((string)$this->file));
@@ -54,6 +69,13 @@ class JsonExtractor implements FileVisitorInterface
         $this->catalogue->add($message);
     }
 
+    /**
+     * call this interface method to crawl json file
+     *
+     * @param \SplFileInfo $file
+     * @param MessageCatalogue $catalogue
+     * @param array $data
+     */
     public function visitJsonFile(\SplFileInfo $file, MessageCatalogue $catalogue, array $data)
     {
         $this->file = $file;

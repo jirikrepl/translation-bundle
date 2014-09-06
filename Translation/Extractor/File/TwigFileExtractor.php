@@ -27,6 +27,12 @@ use JMS\TranslationBundle\Model\Message;
 use JMS\TranslationBundle\Model\MessageCatalogue;
 use JMS\TranslationBundle\Translation\Extractor\FileVisitorInterface;
 
+/**
+ * this class extracts constant strings from twig files, node by node
+ *
+ * Class TwigFileExtractor
+ * @package JMS\TranslationBundle\Translation\Extractor\File
+ */
 class TwigFileExtractor implements FileVisitorInterface, \Twig_NodeVisitorInterface
 {
     private $file;
@@ -41,6 +47,13 @@ class TwigFileExtractor implements FileVisitorInterface, \Twig_NodeVisitorInterf
         $this->traverser = new \Twig_NodeTraverser($env, array($this));
     }
 
+    /**
+     * this function is called on every twig node
+     *
+     * @param \Twig_NodeInterface $node
+     * @param \Twig_Environment $env
+     * @return \Twig_NodeInterface
+     */
     public function enterNode(\Twig_NodeInterface $node, \Twig_Environment $env)
     {
         $this->stack[] = $node;
