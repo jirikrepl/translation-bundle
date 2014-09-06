@@ -12,8 +12,8 @@ Code License:
 Documentation License:
 [Resources/doc/LICENSE](https://github.com/schmittjoh/JMSTranslationBundle/blob/master/Resources/doc/LICENSE)
 
-With this forked bundle you can extract messages from variables. If you want to translate messages form variables, 
-you have to use 'trans' prefix in its name. If variable is associative array, use 'trans' prefix for its keys. 
+With this forked bundle you can extract messages from twig variables. If you want to translate messages from variables, 
+you have to use 'trans' prefix in variable name. If variable is associative array, use 'trans' prefix also for its keys. 
 
 ```html+django
 {# only value with 'transPageTitle will be extracted' #}
@@ -30,19 +30,20 @@ you have to use 'trans' prefix in its name. If variable is associative array, us
 ```
 
 ### working with trans filter
-No domain (translation file) is set, defauld domain `messages` will be used 
+No domain (translation file) is set, defauld domain `messages` will be used.
 
 ```html+django
 {{ 'some.key'|trans|desc('some trans') }}       
 ```
 
-Set domain `"newDomain"`
+Set domain to `"newDomain"`.
 
 ```html+django
 {{ 'another.key'|trans({}, "newDomain")|desc('some trans') }}
 ```
 
 **globally set domain for twig file**
+
 Note that this only influences the current template, not any "included" template (in order to avoid side effects).
 It will not work also inside `{% embed %}` block. How to set domain for whole file is discussed below.
 
