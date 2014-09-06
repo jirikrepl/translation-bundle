@@ -29,11 +29,7 @@ you have to use 'trans' prefix in its name. If variable is associative array, us
 {% set ignoreMe = 'ignoreThis' %}
 ```
 
-In twig template use this code to display translation
-
-```html+django
-{{ transVars.transPageTitle|trans({}, 'variables') }}
-```
+Read on to how to extract and display these variable messages.
 
 ## JMStranslation workflow ##
 Jms file extractors works like this. Visit project directories and its contents (directories are defined trough extraction
@@ -71,6 +67,7 @@ We want to have one message domain (translation file) for every single calculato
         ...
 
 ### Convention for twig files ###
+Save translation domain into variable and use this variable BEFORE any variable with trans prefix.
 
 ```html+django
 {# zodiacCalc.html.twig #}
@@ -82,8 +79,9 @@ We want to have one message domain (translation file) for every single calculato
 {% set transVars = {'transPageTitle': 'Zodiac calculator', ... %}
 
 {% block info %}
-    {# in unforked jmsBundle you can not have domain name referenced by variable name (in this case: dom) #}
-    {{ 'zodiac.info'|trans({}, dom)|desc('Enter your birthdate and discover what your zodiac sign is.') }}
+    {# in unforked jmsBundle domain name has to be scalar sting #}
+    {# now the domain name can be referenced by variable name (in this case: dom) #}
+    {{ 'zodiac.info'|trans({}, dom)|desc('Enter your birthdate...') }}
 {% endblock %}
 ```
 
@@ -100,7 +98,7 @@ Common page layout is used for every calculator.
 ...
 ```
 
-### Save common extraction config ### 
+### Save common extraction config ###
 
 In your config_dev.yaml you can save jms_traslation configs. This simplifies extraction command line commands. List another 
 settings options with command: `php bin\console translation:extract --help` 
