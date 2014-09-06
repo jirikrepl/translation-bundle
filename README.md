@@ -133,27 +133,29 @@ To extract messages using predefined commands above use --config option (alias -
     php bin\console translation:extract cz -c ageCalc
     
 ### extracted messages file
-When you extract messages for ZodiacCalc with this command `php bin\console translation:extract cz -c zodiacCalc`
-JmsBundle will create xliff file stored in location defined in config above. So the location would be
+When you extract messages for ZodiacCalc with this command:
+ 
+ `php bin\console translation:extract cz -c zodiacCalc`
+JmsBundle will create xliff file stored in location defined in config above. So the location would be:
+
  `src/Royal/CalcBundle/Resources/translations/DateCalculators/zodiacCalc.cz.xliff`
 
-This is body element of zodiacCalc.cz.xliff file:
+
+This is the body element of zodiacCalc.cz.xliff file:
 
 ```xml
 <body>
-      <trans-unit id="8df97dd459b6301b92ca8bd230052bce90c46d12" resname="Zodiac calculator">
-        <jms:reference-file line="6">views/DateCalculators/zodiac.html.twig</jms:reference-file>
-        <source>Zodiac calculator</source>
-        <target state="new">Zodiac calculator</target>
-      </trans-unit>
-      <trans-unit id="e27d952ab13d50d89484b3cb47530059f82bb30b" resname="zodiac.info">
-        <jms:reference-file line="13">views/DateCalculators/zodiac.html.twig</jms:reference-file>
-        <source>Enter your birthdate and discover what your zodiac sign is.</source>
-        <target state="new">Zadejte datum narození a zjistěte v jakém znamení zvěrokruhu jste se narodili.
-                    Znamení zvěrokruhu určuje pozice Slunce v době Vašeho narození.
-                </target>
-      </trans-unit>
-    </body>
+  <trans-unit id="8df97dd459b6301b92ca8bd230052bce90c46d12" resname="Zodiac calculator">
+      <jms:reference-file line="6">views/DateCalculators/zodiac.html.twig</jms:reference-file>
+      <source>Zodiac calculator</source>
+      <target state="new">Zodiac calculator</target>
+  </trans-unit>
+  <trans-unit id="e27d952ab13d50d89484b3cb47530059f82bb30b" resname="zodiac.info">
+      <jms:reference-file line="13">views/DateCalculators/zodiac.html.twig</jms:reference-file>
+      <source>Enter your birthdate and discover what your zodiac sign is.</source>
+      <target state="new">Zadejte datum narození a zjistěte...</target>
+  </trans-unit>
+</body>
 ```
     
 ### other useful notes
