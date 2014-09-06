@@ -29,6 +29,27 @@ you have to use 'trans' prefix in its name. If variable is associative array, us
 {% set ignoreMe = 'ignoreThis' %}
 ```
 
+### working with trans filter
+No domain (translation file) is set, defauld domain `messages` will be used 
+
+```html+django
+{{ 'some.key'|trans|desc('some trans') }}       
+```
+
+Set domain `"newDomain"`
+
+```html+django
+{{ 'another.key'|trans({}, "newDomain")|desc('some trans') }}
+```
+
+**globally set domain for twig file**
+Note that this only influences the current template, not any "included" template (in order to avoid side effects).
+It will not work also inside `{% embed %}` block. How to set domain for whole file is discussed below.
+
+```html+django
+{% trans_default_domain "app" %}
+```
+
 Read on to how to extract and display these variable messages.
 
 ## JMStranslation workflow ##
@@ -136,10 +157,10 @@ To extract messages using predefined commands above use --config option (alias -
 When you extract messages for ZodiacCalc with this command:
  
  `php bin\console translation:extract cz -c zodiacCalc`
+ 
 JmsBundle will create xliff file stored in location defined in config above. So the location would be:
 
  `src/Royal/CalcBundle/Resources/translations/DateCalculators/zodiacCalc.cz.xliff`
-
 
 This is the body element of zodiacCalc.cz.xliff file:
 
@@ -159,13 +180,33 @@ This is the body element of zodiacCalc.cz.xliff file:
 ```
     
 ### other useful notes
-If you issue extraction command (e.g. one of those above)
+When you are not using automated extraction and manually adding some translations to your to your xliff files. 
+And those manually added translations does not have keys in twig file.
+ e.g.: Key `'someKey'` exists only in xliff file and not in twig file.
+ 
+ 
+ If this code with `someKey` would exist in twig file, it would be automatically extracted into xliff
+ ```html+django
+     {{ 'someKey'|trans({}, dom)|desc('Enter your birthdate...') }}
+ ```
+ 
+ ```xml
+ <body>
+   <trans-unit id="8df97dd459b6301b92ca8bd230052bce90c46d12" resname="someKey">
+       <jms:reference-file line="6">views/DateCalculators/zodiac.html.twig</jms:reference-file>
+       <source>I am manually added tranlation</source>
+       <target state="new">Jsem manuálně přidáný překlad</target>
+   </trans-unit>
+ </body>
+ ```
+ 
+Then you lost your manual translations if you don't add `--keep` option in command: 
 
 ```
 php bin/console translation:extract cz --bundle=RoyalBaseBundle --keep
 ```
 
-This command  
+To know if some messages will be deleted and some added use this command   
 
 ```
 php bin/console translation:extract cz --bundle=RoyalBaseBundle --dry-run
