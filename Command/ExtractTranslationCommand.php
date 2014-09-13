@@ -35,6 +35,9 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
  */
 class ExtractTranslationCommand extends ContainerAwareCommand
 {
+    private $input;
+    private $output;
+
     protected function configure()
     {
         $this
@@ -55,16 +58,42 @@ class ExtractTranslationCommand extends ContainerAwareCommand
             ->addOption('output-format', null, InputOption::VALUE_REQUIRED, 'The output format that should be used (in most cases, it is better to change only the default-output-format).')
             ->addOption('default-output-format', null, InputOption::VALUE_REQUIRED, 'The default output format (defaults to xliff).')
             ->addOption('keep', null, InputOption::VALUE_NONE, 'Define if the updater service should keep the old translation (defaults to false).')
-            ->addOption('external-translations-dir', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED , 'Load external translation ressources')
-        ;
+            ->addOption('external-translations-dir', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'Load external translation ressources');
     }
+
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /*
         $builder = $input->getOption('config') ?
-                       $this->getContainer()->get('jms_translation.config_factory')->getBuilder($input->getOption('config'))
-                       : new ConfigBuilder();
+            $this->getContainer()->get('jms_translation.config_factory')->getBuilder($input->getOption('config'))
+            : new ConfigBuilder();
+        */
+        $configName = $input->getOption('config');
 
+        if ($configName == '*') {
+            $output->writeln(sprintf('Extracting from all configurations (*)'));
+            $this->executeAllConfigs($input, $output);
+        } else if ($configName) {
+            $builder = $this->getContainer()->get('jms_translation.config_factory')->getBuilder($input->getOption('config'));
+            $this->executeHelper($input, $output, $builder);
+        } else {
+            $builder = new ConfigBuilder();
+            $this->executeHelper($input, $output, $builder);
+        }
+    }
+
+    private function executeAllConfigs(InputInterface $input, OutputInterface $output)
+    {
+        $builderNames = $this->getContainer()->get('jms_translation.config_factory')->getNames();
+        foreach ($builderNames as $builderName) {
+            $builder = $this->getContainer()->get('jms_translation.config_factory')->getBuilder($builderName);
+            $this->executeHelper($input, $output, $builder);
+        }
+    }
+
+    private function executeHelper(InputInterface $input, OutputInterface $output, $builder)
+    {
         $this->updateWithInput($input, $builder);
 
         $locales = $input->getArgument('locales');
@@ -85,7 +114,7 @@ class ExtractTranslationCommand extends ContainerAwareCommand
             $output->writeln(sprintf('Directories: <info>%s</info>', implode(', ', $config->getScanDirs())));
             $output->writeln(sprintf('Excluded Directories: <info>%s</info>', $config->getExcludedDirs() ? implode(', ', $config->getExcludedDirs()) : '# none #'));
             $output->writeln(sprintf('Excluded Names: <info>%s</info>', $config->getExcludedNames() ? implode(', ', $config->getExcludedNames()) : '# none #'));
-            $output->writeln(sprintf('Output-Format: <info>%s</info>', $config->getOutputFormat() ? $config->getOutputFormat() : '# whatever is present, if nothing then '.$config->getDefaultOutputFormat().' #'));
+            $output->writeln(sprintf('Output-Format: <info>%s</info>', $config->getOutputFormat() ? $config->getOutputFormat() : '# whatever is present, if nothing then ' . $config->getDefaultOutputFormat() . ' #'));
             $output->writeln(sprintf('Custom Extractors: <info>%s</info>', $config->getEnabledExtractors() ? implode(', ', array_keys($config->getEnabledExtractors())) : '# none #'));
             $output->writeln('============================================================');
 
@@ -99,21 +128,21 @@ class ExtractTranslationCommand extends ContainerAwareCommand
             if ($input->getOption('dry-run')) {
                 $changeSet = $updater->getChangeSet($config);
 
-                $output->writeln('Added Messages: '.count($changeSet->getAddedMessages()));
-                if($input->hasParameterOption('--verbose')){
-                    foreach($changeSet->getAddedMessages() as $message){
-                        $output->writeln($message->getId(). '-> '.$message->getDesc());
-                    }   
+                $output->writeln('Added Messages: ' . count($changeSet->getAddedMessages()));
+                if ($input->hasParameterOption('--verbose')) {
+                    foreach ($changeSet->getAddedMessages() as $message) {
+                        $output->writeln($message->getId() . '-> ' . $message->getDesc());
+                    }
                 }
 
                 if ($config->isKeepOldMessages()) {
                     $output->writeln('Deleted Messages: # none as "Keep Old Translations" is true #');
                 } else {
-                    $output->writeln('Deleted Messages: '.count($changeSet->getDeletedMessages()));
-                    if($input->hasParameterOption('--verbose')){
-                        foreach($changeSet->getDeletedMessages() as $message){
-                            $output->writeln($message->getId(). '-> '.$message->getDesc());
-                        }   
+                    $output->writeln('Deleted Messages: ' . count($changeSet->getDeletedMessages()));
+                    if ($input->hasParameterOption('--verbose')) {
+                        foreach ($changeSet->getDeletedMessages() as $message) {
+                            $output->writeln($message->getId() . '-> ' . $message->getDesc());
+                        }
                     }
                 }
 
@@ -126,6 +155,13 @@ class ExtractTranslationCommand extends ContainerAwareCommand
         $output->writeln('done!');
     }
 
+    /**
+     * reads options from input.
+     * If there are same options in input as those in config, it will replace replace config options.
+     *
+     * @param InputInterface $input
+     * @param ConfigBuilder $builder
+     */
     private function updateWithInput(InputInterface $input, ConfigBuilder $builder)
     {
         if ($bundle = $input->getOption('bundle')) {
@@ -134,7 +170,7 @@ class ExtractTranslationCommand extends ContainerAwareCommand
             }
 
             $bundle = $this->getApplication()->getKernel()->getBundle($bundle);
-            $builder->setTranslationsDir($bundle->getPath().'/Resources/translations');
+            $builder->setTranslationsDir($bundle->getPath() . '/Resources/translations');
             $builder->setScanDirs(array($bundle->getPath()));
         }
 

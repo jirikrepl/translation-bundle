@@ -112,6 +112,7 @@ class TwigVariableExtractor implements FileVisitorInterface, \Twig_NodeVisitorIn
     private function addMessage($desc, $node)
     {
         $message = new Message($desc, $this->domain);
+        $message->setDesc($desc);
         $message->addSource(new FileSource((string)$this->file, $node->getLine()));
         $this->catalogue->add($message);
     }
