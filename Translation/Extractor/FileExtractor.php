@@ -144,7 +144,10 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
                 $this->logger->debug(sprintf('Parsing file "%s"', $file));
 
                 if (false !== $pos = strrpos($file, '.')) {
-                    $extension = substr($file, $pos + 1);
+                    $nameWithExtension =  basename($file);
+                    $exploded = explode(".", $nameWithExtension);
+                    $fileName = strtolower($exploded[0]);
+                    $extension = $exploded[1];
 
                     if ('php' === $extension) {
                         try {
@@ -160,7 +163,8 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
                         $visitingMethod = 'visitTwigFile';
                         $visitingArgs[] = $this->twig->parse($this->twig->tokenize(file_get_contents($file), (string)$file));
 
-                    } else if ('json' === $extension) {
+                    // extract json file only if there is "trans" substring in file name
+                    } else if ('json' === $extension && strpos($fileName, 'trans') !== FALSE) {
                         $visitingMethod = 'visitJsonFile';
                         $string = file_get_contents($file);
                         $jsonTool = new JsonTool();
