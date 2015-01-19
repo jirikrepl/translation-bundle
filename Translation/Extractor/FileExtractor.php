@@ -147,7 +147,7 @@ class FileExtractor implements ExtractorInterface, LoggerAwareInterface
                     $nameWithExtension =  basename($file);
                     $exploded = explode(".", $nameWithExtension);
                     $fileName = strtolower($exploded[0]);
-                    $extension = $exploded[1];
+                    $extension = substr($file, $pos + 1);
 
                     if ('php' === $extension) {
                         try {
