@@ -87,6 +87,8 @@ We want to have one message domain (translation file) for every single calculato
                         ...
         Tests/
         ...
+### Convention for json files ###
+To extract messages from json files, json files has to have 'Trans' substring in theirs names. E.g.: menuItemsTrans.json 
 
 ### Convention for twig files ###
 Save translation domain into variable and use this variable BEFORE any variable with trans prefix.
