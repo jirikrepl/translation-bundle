@@ -21,7 +21,7 @@ namespace JMS\TranslationBundle\Translation\Extractor;
 use JMS\TranslationBundle\Twig\DefaultApplyingNodeVisitor;
 
 use JMS\TranslationBundle\Exception\InvalidArgumentException;
-use Royal\BaseBundle\Twig\JsonTool;
+use BaseBundle\Twig\JsonTool;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use JMS\TranslationBundle\Logger\LoggerAwareInterface;
 
