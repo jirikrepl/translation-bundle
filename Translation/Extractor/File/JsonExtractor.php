@@ -35,11 +35,6 @@ class JsonExtractor implements FileVisitorInterface
      */
     private function traverseData(array $categories)
     {
-        // manually create message for 'All calculators'
-        $allCalc = new stdClass;
-        $allCalc->desc = 'All calculators';
-        $this->addMessage($allCalc);
-
         foreach ($categories as $category) {
             if (isset($category->subSections)) {
                 $this->traverseData($category->subSections);
@@ -62,11 +57,12 @@ class JsonExtractor implements FileVisitorInterface
      */
     private function addMessage($item)
     {
-        $id = str_replace(" ", ".", $item->desc);
-        $message = new Message($id, 'menuItems');
-//        $message->addSource(new FileSource((string)$this->file));
-        $message->setDesc($item->desc);
-        $this->catalogue->add($message);
+        if (property_exists($item, 'desc')) {
+            $id = str_replace(" ", ".", $item->desc);
+            $message = new Message($id, 'menuItems');
+            $message->setDesc($item->desc);
+            $this->catalogue->add($message);
+        }
     }
 
     /**
