@@ -152,9 +152,9 @@ settings options with command: `php bin\console translation:extract --help`
 To extract messages using predefined commands above use --config option (alias -c):
                 
 <!-- language:console -->
-    php bin\console translation:extract cz -c bmi
-    php bin\console translation:extract cz -c zodiacCalc
-    php bin\console translation:extract cz -c ageCalc
+    php app\console translation:extract cz -c bmi
+    php app\console translation:extract cz -c zodiacCalc
+    php app\console translation:extract cz -c ageCalc
     
 ### extracted messages file
 When you extract messages for ZodiacCalc with this command:
