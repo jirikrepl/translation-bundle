@@ -124,7 +124,7 @@ Common page layout is used for every calculator.
 
 ### Save common extraction config ###
 
-In your config_dev.yaml you can save jms_traslation configs. This simplifies extraction command line commands. List another 
+In `app/config/config_translation.yml` you can save jms_traslation configs. This simplifies extraction command line commands. List another 
 settings options with command: `php bin\console translation:extract --help` 
 
 <!-- language:console -->
